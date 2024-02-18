@@ -2,33 +2,42 @@
 
 namespace App\Filament\Resources;
 
-use App\Exports\StudentsExport;
-use App\Filament\Resources\StudentResource\Pages;
+use Filament\Tables;
 use App\Models\Classes;
 use App\Models\Section;
 use App\Models\Student;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use App\Exports\StudentsExport;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Filters\Filter;
+use Maatwebsite\Excel\Facades\Excel;
+use Filament\Forms\Components\Select;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
-use Filament\Tables\Table;
+use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Maatwebsite\Excel\Facades\Excel;
+use App\Filament\Resources\StudentResource\Pages;
+use App\Models\User;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
-class StudentResource extends Resource
+class StudentResource extends Resource  implements HasShieldPermissions
 {
     protected static ?string $model = Student::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
 
     protected static ?string $navigationGroup = "Academy Management";
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return User::find(Auth::id())->can('showNavigation_student');
+    }
 
     public static function getNavigationBadge(): ?string
     {
@@ -62,6 +71,9 @@ class StudentResource extends Resource
 
     public static function table(Table $table): Table
     {
+        if(!User::find(Auth::id())->can('list_student')){
+            abort(403);
+        }
         return $table
             ->columns([
                 TextColumn::make('name')
@@ -100,28 +112,54 @@ class StudentResource extends Resource
                     })->when($data['section_id'], function ($query) use ($data){
                         return $query->where('section_id', $data['section_id']);
                     });
-                }),
+                })
+                ->hidden(
+                    function(){
+                        return !User::find(Auth::id())->can('filter_student');
+                    }
+                ),
             ])
             ->actions([
                 Action::make('downloadPdf')
+                    ->hidden(
+                        function(){
+                            return !User::find(Auth::id())->can('download_student');
+                        }
+                    )
                     ->url(function(Student $student){
                         return route('student.invoice.generate', $student);
                     }),
                 Action::make('qrCode')
                     ->url(function(Student $student){
                         return static::getUrl('qrCode', ['record' => $student]);
-                    }),
+                    })
+                    ->hidden(
+                        function(){
+                            return !User::find(Auth::id())->can('qrCode_student');
+                        }
+                    )
+                    ,
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->hidden(
+                            function(){
+                                return !User::find(Auth::id())->can('deleteMany_student');
+                            }
+                        ),
                     BulkAction::make('export')
                             ->label('Export Records')
                             ->icon('heroicon-o-document-arrow-down')
                             ->action(function (Collection $records) {
                                 return Excel::download(new StudentsExport($records), 'students.xlsx');
-                    })
+                    })->hidden(
+                        function(){
+                            return !User::find(Auth::id())->can('export_student');
+                        }
+                    )
                 ]),
             ]);
     }
@@ -140,6 +178,22 @@ class StudentResource extends Resource
             'create' => Pages\CreateStudent::route('/create'),
             'edit' => Pages\EditStudent::route('/{record}/edit'),
             'qrCode' => Pages\GenerateQrCode::route('/{record}/qrcode'),
+        ];
+    }
+
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'list',
+            'download',
+            'create',
+            'update',
+            'delete',
+            'deleteMany',
+            'qrCode',
+            'filter',
+            'export',
+            'showNavigation'
         ];
     }
 }

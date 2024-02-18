@@ -19,3 +19,13 @@ class User extends Authenticatable
 }
 ```
 
+Após adicionar a trait, você deve implementar o método `canAccessPanel` na model do usuário. O método deve retornar `true` se o usuário tiver acesso ao painel e `false` caso contrário. O método deve ficar assim:
+
+```php
+public function canAccessPanel(): bool
+{
+    return $this->hasRole(Utils::getSuperAdminName()) || $this->hasRole(Utils::getPanelUserRoleName());
+}
+```
+
+No método `canAccessPanel`, estamos verificando se o usuário tem o nível de acesso `super_admin` ou qualquer outro nível de acesso que você tenha definido, caso não tenha nenhum ele não terá acesso ao painel.

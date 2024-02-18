@@ -5,6 +5,7 @@ namespace App\Filament\Resources\StudentResource\Pages;
 use App\Filament\Resources\StudentResource;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Resources\Pages\Page;
+use Illuminate\Support\Facades\Auth;
 
 class GenerateQrCode extends Page
 {
@@ -18,5 +19,13 @@ class GenerateQrCode extends Page
     {
         $this->record = $this->resolveRecord($record);
         static::authorizeResourceAccess();
+    }
+
+    public function export()
+    {
+        if (!Auth::user()->can('export_students')) {
+            abort(403, 'Você não tem permissão para realizar esta ação.');
+        }
+        // Lógica de exportação
     }
 }

@@ -10,142 +10,42 @@ class StudentPolicy
 {
     use HandlesAuthorization;
 
-    /**
-     * Determine whether the user can view any models.
-     *
-     * @param  \App\Models\User  $user
-     * @return bool
-     */
-    public function viewAny(User $user): bool
+    public function list(User $user)
     {
-        return $user->can('view_any_student');
+        return $user->can('list_student');
     }
 
-    /**
-     * Determine whether the user can view the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Student  $student
-     * @return bool
-     */
-    public function view(User $user, Student $student): bool
-    {
-        return $user->can('view_student');
-    }
-
-    /**
-     * Determine whether the user can create models.
-     *
-     * @param  \App\Models\User  $user
-     * @return bool
-     */
-    public function create(User $user): bool
-    {
-        return $user->can('create_student');
-    }
-
-    /**
-     * Determine whether the user can update the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Student  $student
-     * @return bool
-     */
-    public function update(User $user, Student $student): bool
+    public function update(User $user)
     {
         return $user->can('update_student');
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Student  $student
-     * @return bool
-     */
-    public function delete(User $user, Student $student): bool
+    public function delete(User $user)
     {
         return $user->can('delete_student');
     }
 
-    /**
-     * Determine whether the user can bulk delete.
-     *
-     * @param  \App\Models\User  $user
-     * @return bool
-     */
-    public function deleteAny(User $user): bool
+    public function deleteMany(User $user)
     {
-        return $user->can('delete_any_student');
+        return $user->can('deleteMany_student');
+    }
+    public function export(User $user)
+    {
+        return $user->can('export_student');
     }
 
-    /**
-     * Determine whether the user can permanently delete.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Student  $student
-     * @return bool
-     */
-    public function forceDelete(User $user, Student $student): bool
+    public function filter(User $user)
     {
-        return $user->can('force_delete_student');
+        return $user->can('filter_student');
     }
 
-    /**
-     * Determine whether the user can permanently bulk delete.
-     *
-     * @param  \App\Models\User  $user
-     * @return bool
-     */
-    public function forceDeleteAny(User $user): bool
+    public function create(User $user)
     {
-        return $user->can('force_delete_any_student');
+        return $user->can('create_student');
     }
 
-    /**
-     * Determine whether the user can restore.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Student  $student
-     * @return bool
-     */
-    public function restore(User $user, Student $student): bool
+    public function showNavigation(User $user)
     {
-        return $user->can('restore_student');
+        return $user->can('showNavigation_student');
     }
-
-    /**
-     * Determine whether the user can bulk restore.
-     *
-     * @param  \App\Models\User  $user
-     * @return bool
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_student');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Student  $student
-     * @return bool
-     */
-    public function replicate(User $user, Student $student): bool
-    {
-        return $user->can('replicate_student');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     *
-     * @param  \App\Models\User  $user
-     * @return bool
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_student');
-    }
-
 }
