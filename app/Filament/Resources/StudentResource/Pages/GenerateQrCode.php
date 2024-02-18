@@ -20,12 +20,4 @@ class GenerateQrCode extends Page
         $this->record = $this->resolveRecord($record);
         static::authorizeResourceAccess();
     }
-
-    public function export()
-    {
-        if (!Auth::user()->can('export_students')) {
-            abort(403, 'Você não tem permissão para realizar esta ação.');
-        }
-        // Lógica de exportação
-    }
 }
