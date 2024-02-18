@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Student;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -10,6 +11,8 @@ use Filament\Widgets\TableWidget as BaseWidget;
 
 class LatestStudents extends BaseWidget
 {
+    use HasWidgetShield;
+    
     protected static ?int $sort = 2;
 
     protected int | string | array $columnSpan = 'full';

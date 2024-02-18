@@ -5,11 +5,14 @@ namespace App\Filament\Widgets;
 use App\Models\Classes;
 use App\Models\Section;
 use App\Models\Student;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 
 class StatsOverview extends BaseWidget
 {
+    use HasWidgetShield;
+
     protected static ?int $sort = 1;
 
     protected function getStats(): array
